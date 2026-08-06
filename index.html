@@ -209,9 +209,9 @@
             justify-content: center;
             font-size: 10px;
             font-weight: 800;
-            color: #fff;
-            background: rgba(255, 255, 255, 0.18);
-            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #1e293b;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(15, 23, 42, 0.15);
             backdrop-filter: blur(4px);
             z-index: 2;
         }
@@ -414,7 +414,7 @@
         </div>
 
         <!-- Apps Responsive Container (Perfect for Mobile AND Desktop) -->
-        <div id="apps-container" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 w-full relative z-20"></div>
+        <div id="apps-container" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 w-full relative z-20"></div>
 
         <!-- ========================================== -->
         <!-- 4. SECURE ADMIN SETTINGS & LINK MANAGER    -->
@@ -529,19 +529,26 @@
             { id: 3, titleEn: "Research Library", titleKu: "کتێبخانەی توێژینەوە", icon: "library", url: "https://english-uor.github.io/Library/", theme: "emerald", locked: false },
             { id: 4, titleEn: "Course Distribution", titleKu: "دابەشکردنی وانەکان", icon: "layout-template", url: "https://english-uor.github.io/english.subjects/", theme: "indigo", locked: false },
             { id: 5, titleEn: "Holidays & Occasions", titleKu: "پشوو و بۆنەکان", icon: "calendar-days", url: "holidays.html", theme: "amber", locked: false },
-            { id: 6, titleEn: "Schedules & Exams", titleKu: "خشتە و تاقیکردنەوەکان", icon: "file-text", url: "https://english-uor.github.io/schedule-calendar-exam/", theme: "purple", locked: false }
+            { id: 6, titleEn: "Schedules & Exams", titleKu: "خشتە و تاقیکردنەوەکان", icon: "file-text", url: "https://english-uor.github.io/schedule-calendar-exam/", theme: "purple", locked: false },
+            { id: 7, titleEn: "AI Tools", titleKu: "ئامرازەکانی زیرەکی دەستکرد", icon: "bot", url: "https://english-uor.github.io/AI/", theme: "cyan", locked: false },
+            { id: 8, titleEn: "Topic Similarity", titleKu: "لێکچوونی بابەت", icon: "scan-search", url: "https://english-uor.github.io/Topic-checker/", theme: "teal", locked: false },
+            { id: 9, titleEn: "Availability", titleKu: "کاتی ئامادەبوون", icon: "calendar-clock", url: "https://english-uor.github.io/availability-time/", theme: "orange", locked: false }
         ];
 
-        // Each theme now carries its own UNIQUE deep background gradient (per-app color identity)
-        // plus the border/icon accent used on top of that deep color.
+        // Each theme carries its own UNIQUE light background gradient (soft tint, per-app color
+        // identity) plus a solid-color icon badge on top, so the icon still pops against the
+        // lighter card. Title/subtitle text stays dark slate (set in the render markup below).
         const gridThemes = {
-            blue:    { deepFrom: "#1e3a8a", deepTo: "#1d4ed8", border: "border-white/10", iconText: "text-white", iconBg: "bg-white/15" },
-            rose:    { deepFrom: "#9f1239", deepTo: "#e11d48", border: "border-white/10", iconText: "text-white", iconBg: "bg-white/15" },
-            emerald: { deepFrom: "#065f46", deepTo: "#059669", border: "border-white/10", iconText: "text-white", iconBg: "bg-white/15" },
-            indigo:  { deepFrom: "#312e81", deepTo: "#4338ca", border: "border-white/10", iconText: "text-white", iconBg: "bg-white/15" },
-            amber:   { deepFrom: "#7c2d12", deepTo: "#b45309", border: "border-white/10", iconText: "text-white", iconBg: "bg-white/15" },
-            purple:  { deepFrom: "#581c87", deepTo: "#7e22ce", border: "border-white/10", iconText: "text-white", iconBg: "bg-white/15" },
-            slate:   { deepFrom: "#1e293b", deepTo: "#334155", border: "border-white/10", iconText: "text-white", iconBg: "bg-white/15" }
+            blue:    { deepFrom: "#eff6ff", deepTo: "#dbeafe", border: "border-blue-200",    iconText: "text-white", iconBg: "bg-blue-600" },
+            rose:    { deepFrom: "#fff1f2", deepTo: "#ffe4e6", border: "border-rose-200",    iconText: "text-white", iconBg: "bg-rose-600" },
+            emerald: { deepFrom: "#ecfdf5", deepTo: "#d1fae5", border: "border-emerald-200", iconText: "text-white", iconBg: "bg-emerald-600" },
+            indigo:  { deepFrom: "#eef2ff", deepTo: "#e0e7ff", border: "border-indigo-200",  iconText: "text-white", iconBg: "bg-indigo-600" },
+            amber:   { deepFrom: "#fffbeb", deepTo: "#fef3c7", border: "border-amber-200",   iconText: "text-white", iconBg: "bg-amber-600" },
+            purple:  { deepFrom: "#faf5ff", deepTo: "#f3e8ff", border: "border-purple-200",  iconText: "text-white", iconBg: "bg-purple-600" },
+            cyan:    { deepFrom: "#ecfeff", deepTo: "#cffafe", border: "border-cyan-200",    iconText: "text-white", iconBg: "bg-cyan-600" },
+            teal:    { deepFrom: "#f0fdfa", deepTo: "#ccfbf1", border: "border-teal-200",    iconText: "text-white", iconBg: "bg-teal-600" },
+            orange:  { deepFrom: "#fff7ed", deepTo: "#ffedd5", border: "border-orange-200",  iconText: "text-white", iconBg: "bg-orange-600" },
+            slate:   { deepFrom: "#f8fafc", deepTo: "#f1f5f9", border: "border-slate-200",   iconText: "text-white", iconBg: "bg-slate-600" }
         };
 
         let appsList = [];
@@ -595,7 +602,8 @@
                     } else {
                         // Old data set (e.g. contains a removed app like Trainer/Research
                         // Evaluation, Statistics Portal, Topic Submission) -> migrate to the
-                        // new 6-app list while preserving any lock state by matching title.
+                        // current app list (now 9 apps) while preserving any lock state by
+                        // matching title.
                         appsList = defaultApps.map(def => {
                             const match = parsed.find(p => p.titleEn === def.titleEn);
                             return match ? { ...def, locked: !!match.locked, url: match.url || def.url } : { ...def };
@@ -809,7 +817,7 @@
             
             // Set fully responsive classes dynamically based on active view mode
             if (currentView === 'grid') {
-                container.className = 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 w-full relative z-20';
+                container.className = 'grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 w-full relative z-20';
             } else {
                 container.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 w-full relative z-20';
             }
@@ -847,8 +855,8 @@
                             <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center mb-2.5 border border-white/10 shadow-sm ${theme.iconBg}">
                                 <i data-lucide="${app.icon}" class="w-5 h-5 sm:w-6 sm:h-6 ${theme.iconText}"></i>
                             </div>
-                            <h3 class="text-[10px] sm:text-[11px] md:text-xs font-bold text-white leading-snug w-full truncate px-1">${app.titleEn}</h3>
-                            <h4 class="text-[9px] sm:text-[10px] md:text-[11px] text-white/70 mt-0.5 font-kurdish leading-tight w-full truncate px-1" dir="rtl">${app.titleKu}</h4>
+                            <h3 class="text-[10px] sm:text-[11px] md:text-xs font-bold text-slate-800 leading-snug w-full truncate px-1">${app.titleEn}</h3>
+                            <h4 class="text-[9px] sm:text-[10px] md:text-[11px] text-slate-600/80 mt-0.5 font-kurdish leading-tight w-full truncate px-1" dir="rtl">${app.titleKu}</h4>
                         </div>`;
                 } else {
                     container.innerHTML += `
@@ -858,11 +866,11 @@
                                 <i data-lucide="${app.icon}" class="w-6 h-6 ${theme.iconText}"></i>
                             </div>
                             <div class="flex flex-col flex-1 pr-6">
-                                <h3 class="text-[14px] md:text-[16px] font-bold text-white leading-tight flex items-center gap-2">
+                                <h3 class="text-[14px] md:text-[16px] font-bold text-slate-800 leading-tight flex items-center gap-2">
                                     ${app.titleEn}
-                                    ${isLocked ? `<i data-lucide="lock" class="w-3.5 h-3.5 text-rose-300"></i>` : ''}
+                                    ${isLocked ? `<i data-lucide="lock" class="w-3.5 h-3.5 text-rose-500"></i>` : ''}
                                 </h3>
-                                <h4 class="text-[11px] md:text-xs font-bold text-white/70 mt-1 font-kurdish" dir="rtl">${app.titleKu}</h4>
+                                <h4 class="text-[11px] md:text-xs font-bold text-slate-600/80 mt-1 font-kurdish" dir="rtl">${app.titleKu}</h4>
                             </div>
                         </div>`;
                 }
@@ -1041,7 +1049,7 @@
         }
 
         function initTheme() {
-            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            if (localStorage.theme === 'dark') {
                 document.documentElement.classList.add('dark');
             } else {
                 document.documentElement.classList.remove('dark');
