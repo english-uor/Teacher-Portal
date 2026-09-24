@@ -532,7 +532,9 @@
             { id: 6, titleEn: "Schedules & Exams", titleKu: "خشتە و تاقیکردنەوەکان", icon: "file-text", url: "https://english-uor.github.io/schedule-calendar-exam/", theme: "purple", locked: false },
             { id: 7, titleEn: "AI Tools", titleKu: "ئامرازەکانی زیرەکی دەستکرد", icon: "bot", url: "https://english-uor.github.io/AI/", theme: "cyan", locked: false },
             { id: 8, titleEn: "Topic Similarity", titleKu: "لێکچوونی بابەت", icon: "scan-search", url: "https://english-uor.github.io/Topic-checker/", theme: "teal", locked: false },
-            { id: 9, titleEn: "Availability", titleKu: "کاتی ئامادەبوون", icon: "calendar-clock", url: "https://english-uor.github.io/availability-time/", theme: "orange", locked: false }
+            { id: 9, titleEn: "Availability", titleKu: "کاتی ئامادەبوون", icon: "calendar-clock", url: "https://english-uor.github.io/availability-time/", theme: "orange", locked: false },
+            { id: 10, titleEn: "UOR Score", titleKu: "نمرەی خوێندکار", icon: "smartphone", url: "#", theme: "purple", locked: false },
+            { id: 11, titleEn: "Tutorials", titleKu: "ڕێنماییەکان", icon: "youtube", url: "https://www.youtube.com/playlist?list=PLb2rKX9TiSOc", theme: "rose", locked: false }
         ];
 
         // Each theme carries its own UNIQUE light background gradient (soft tint, per-app color
@@ -896,10 +898,18 @@
                 setTimeout(() => {
                     cardEl.classList.remove('led-spinning');
                     cardEl.style.pointerEvents = '';
-                    window.open(app.url, '_blank');
+                    if (app.id === 10) {
+                        document.getElementById('uor-score-modal').style.display = 'flex';
+                    } else {
+                        window.open(app.url, '_blank');
+                    }
                 }, 800);
             } else {
-                window.open(app.url, '_blank');
+                if (app.id === 10) {
+                    document.getElementById('uor-score-modal').style.display = 'flex';
+                } else {
+                    window.open(app.url, '_blank');
+                }
             }
         }
 
@@ -1117,33 +1127,7 @@
             }
         }
     </script>
-<!-- ==================== APP 10: UOR SCORE ==================== -->
-<div class="card" style="flex: 1; min-width: 280px; max-width: 400px; background: #ffffff; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; border-top: 5px solid #6f42c1; box-shadow: 0 4px 12px rgba(0,0,0,0.06); text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
-  <div>
-    <span style="font-size: 13px; font-weight: bold; color: #6f42c1; text-transform: uppercase; letter-spacing: 1px;">App 10</span>
-    <h3 style="margin: 8px 0 10px 0; color: #2d3748; font-size: 20px;">UOR score, نمرەی خوێندکار</h3>
-    <p style="color: #4a5568; font-size: 14px; line-height: 1.5; margin: 0;">Access student scores across platforms / کردنەوە و دابەزاندنی ئەپی نمرەکان</p>
-  </div>
-  <div style="margin-top: 20px;">
-    <button onclick="document.getElementById('uor-score-modal').style.display='flex'" style="width: 100%; padding: 12px 20px; background-color: #6f42c1; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold;">
-      Open App / کردنەوەی ئەپ
-    </button>
-  </div>
-</div>
 
-<!-- ==================== APP 11: TUTORIALS ==================== -->
-<div class="card" style="flex: 1; min-width: 280px; max-width: 400px; background: #ffffff; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; border-top: 5px solid #d90429; box-shadow: 0 4px 12px rgba(0,0,0,0.06); text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
-  <div>
-    <span style="font-size: 13px; font-weight: bold; color: #d90429; text-transform: uppercase; letter-spacing: 1px;">App 11</span>
-    <h3 style="margin: 8px 0 10px 0; color: #2d3748; font-size: 20px;">Tutorials / ڕێنماییەکان</h3>
-    <p style="color: #4a5568; font-size: 14px; line-height: 1.5; margin: 0;">Watch video guides and playlists / سەیرکردنی ڤیدیۆی فێرکاری لە یوتیوب</p>
-  </div>
-  <div style="margin-top: 20px;">
-    <a href="https://www.youtube.com/playlist?list=PLb2rKX9TiSOc" target="_blank" style="display: block; padding: 12px 20px; background: #d90429; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px;">
-      ▶️ Watch Playlist / پلیلیستی فێرکاری
-    </a>
-  </div>
-</div>
 
 <!-- ==================== UOR SCORE MODAL POPUP ==================== -->
 <div id="uor-score-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000; font-family: sans-serif;">
