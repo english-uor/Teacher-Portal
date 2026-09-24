@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Teachers Portal - UoR</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="image_0cf63c.png">
+    <link rel="apple-touch-icon" href="image_0cf63c.png">
+    
+    <meta name="theme-color" content="#f4f7ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Teachers">
+
+    <!-- Explicitly import web-safe fonts to bypass corrupted local system fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- CSS/JS Libraries and Tailwind Framework -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Inter', 'Noto Sans Arabic', 'sans-serif'], 
+                        kurdish: ['Noto Sans Arabic', 'sans-serif'] 
+                    },
+                    colors: { 
+                        brand: { 
+                            400: '#38bdf8', 
+                            500: '#0ea5e9', 
+                            600: '#0284c7' 
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            -webkit-tap-highlight-color: transparent; 
+            background: linear-gradient(135deg, #f4f7ff 0%, #e6efff 100%);
+            min-height: 100vh;
+        }
+        .dark body {
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+        }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+
+        /* Splash Screen Transitions */
+        #splash-screen { transition: opacity 0.6s ease-in-out; }
+        #main-app { transition: opacity 0.6s ease-in-out; }
+
+        /* MOVING LED BORDER EFFECT - DASHBOARD (Blue/Pink/Purple) */
+        .moving-border-wrapper {
+            position: relative;
+            border-radius: 2.3rem;
+            padding: 2.5px; 
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+        }
+        .dark .moving-border-wrapper {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+        }
+        .moving-border-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(
+                transparent, 
+                rgba(14, 165, 233, 0.1), 
+                #0ea5e9, 
+                #8b5cf6, 
+                #ec4899, 
+                #0ea5e9, 
+                transparent 25%
+            );
+            animation: rotate-led 4s linear infinite;
+            z-index: 0;
+        }
+        .moving-border-inner {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 2.15rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .dark .moving-border-inner { background: rgba(15, 23, 42, 0.95); }
+
+        /* MOVING LED BORDER EFFECT - MAIN HEADER (Emerald/Gold/Cyan) */
+        .header-led-wrapper {
+            position: relative;
+            border-radius: 1.75rem; 
+            padding: 3px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        }
+        .dark .header-led-wrapper {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+        .header-led-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(
+                transparent, 
+                rgba(16, 185, 129, 0.1), 
+                #10b981, /* Emerald */
+                #f59e0b, /* Gold/Amber */
+                #06b6d4, /* Cyan */
+                #10b981, 
+                transparent 30%
+            );
+            animation: rotate-led-reverse 3.5s linear infinite;
+            z-index: 0;
+        }
+        .header-led-inner {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 1.6rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .dark .header-led-inner { background: rgba(15, 23, 42, 0.95); }
+
+        @keyframes rotate-led {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes rotate-led-reverse {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        /* App Cards responsive scaling */
+        .app-card-grid {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 1.5rem;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            border-width: 1.5px;
+        }
+        .dark .app-card-grid { background: rgba(30, 41, 59, 0.8); }
+        .app-card-grid:hover { transform: translateY(-4px); }
+        .app-card-grid:active { transform: scale(0.95); }
+
+        .app-card-list {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 1.25rem;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            border-width: 1.5px;
+        }
+        .dark .app-card-list { background: rgba(30, 41, 59, 0.8); }
+        .app-card-list:hover { transform: translateX(4px); }
+
+        /* --- Deep unique background app cards --- */
+        /* Border stays perfectly stable/static; a spinning LED ring only appears for 800ms on click */
+        .app-card-grid, .app-card-list {
+            position: relative;
+            z-index: 0;
+            isolation: isolate;
+        }
+        .app-card-grid::before, .app-card-list::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: inherit;
+            background: conic-gradient(from 0deg, transparent, #38bdf8, #8b5cf6, #ec4899, #38bdf8, transparent 70%);
+            opacity: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .app-card-grid.led-spinning::before,
+        .app-card-list.led-spinning::before {
+            opacity: 1;
+            animation: led-spin-once 0.8s linear;
+        }
+        @keyframes led-spin-once {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+        .app-card-grid.led-spinning,
+        .app-card-list.led-spinning {
+            transform: scale(0.97);
+        }
+
+        /* Numbered badge shown on every app */
+        .app-number-badge {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            width: 1.4rem;
+            height: 1.4rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 800;
+            color: #1e293b;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(15, 23, 42, 0.15);
+            backdrop-filter: blur(4px);
+            z-index: 2;
+        }
+        .app-card-list .app-number-badge {
+            position: static;
+            width: 1.5rem;
+            height: 1.5rem;
+            font-size: 11px;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        /* Dynamic Inline Dashboard Animations */
+        #inline-dashboard-content { transition: max-height 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease-out, margin 0.4s ease; }
+        
+        .info-item { opacity: 0; transform: translateY(15px); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .is-open .info-item:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.1s; }
+        .is-open .info-item:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.2s; }
+        .is-open .info-item:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
+        .is-open .info-item:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.4s; }
+
+        @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .animate-pop { animation: popIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    </style>
+</head>
+<body class="text-slate-800 dark:text-slate-100 flex flex-col items-center min-h-screen notranslate" translate="no">
+
+    <!-- ========================================== -->
+    <!-- 1. WELCOME SPLASH SCREEN (Shows for 2s)    -->
+    <!-- ========================================== -->
+    <div id="splash-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center px-5">
+        
+        <!-- Glowing LED Dashboard Card for Splash -->
+        <div class="moving-border-wrapper w-full max-w-md md:max-w-xl animate-pop" style="animation-delay: 0.1s;">
+            <div class="moving-border-inner w-full p-7 md:p-10 flex flex-col items-center relative z-10">
+                
+                <!-- Splash Header Badge -->
+                <div class="bg-brand-50 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800 text-brand-600 dark:text-brand-400 text-[10px] md:text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-6 flex items-center gap-1.5 shadow-sm">
+                    <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i> Teachers Hub
+                </div>
+
+                <!-- English Date Header -->
+                <h2 class="en-date-display text-2xl md:text-3xl font-black text-slate-800 dark:text-white tracking-tight mb-2 text-center">Loading Date...</h2>
+                
+                <!-- Accurate Dual Kurdish Dates -->
+                <div class="flex flex-col items-center gap-1 mb-5">
+                    <h3 class="ku-greg-date-display text-[16px] md:text-[18px] font-bold text-brand-600 dark:text-brand-400 font-kurdish text-center" dir="rtl">باردەکرێت...</h3>
+                    <h4 class="ku-jalaali-date-display text-[14px] md:text-[16px] font-medium text-slate-500 dark:text-slate-400 font-kurdish text-center mb-1" dir="rtl">...</h4>
+                    <div class="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800/50 px-3 py-1 mt-1 rounded-full flex items-center gap-1.5">
+                        <i data-lucide="leaf" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
+                        <span class="ku-season-display text-[11px] md:text-xs font-bold text-emerald-700 dark:text-emerald-400 font-kurdish">...</span>
+                    </div>
+                </div>
+                
+                <!-- Location -->
+                <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/80 px-4 py-2 rounded-xl border border-slate-100 dark:border-slate-700 mb-6 shadow-sm">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-rose-500"></i>
+                    <span class="text-xs md:text-sm font-semibold text-slate-500 dark:text-slate-400">Ranya - Kurdistan | ڕانیە - کوردستان</span>
+                </div>
+                
+                <div class="w-full h-px bg-slate-100 dark:bg-slate-800 mb-6 block"></div>
+
+                <!-- Weather (RTL Layout) -->
+                <div class="flex items-center justify-between w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800/80 rounded-3xl p-4 md:p-6 mb-8 shadow-sm" dir="rtl">
+                    <div class="flex flex-col items-center flex-1 border-l border-slate-200 dark:border-slate-700/50">
+                        <span class="text-[11px] md:text-xs text-slate-500 dark:text-slate-400 font-kurdish font-bold mb-2">ئەمڕۆ</span>
+                        <i id="splash-weather-icon-0" data-lucide="sun" class="w-7 h-7 md:w-9 md:h-9 text-amber-500 mb-2"></i>
+                        <span id="splash-weather-temp-0" class="text-lg md:text-xl font-black text-slate-800 dark:text-white">--°C</span>
+                    </div>
+                    <div class="flex flex-col items-center flex-1 border-l border-slate-200 dark:border-slate-700/50">
+                        <span id="splash-weather-day-1" class="text-[11px] md:text-xs text-slate-500 dark:text-slate-400 font-kurdish font-bold mb-2">...</span>
+                        <i id="splash-weather-icon-1" data-lucide="sun" class="w-7 h-7 md:w-9 md:h-9 text-amber-500 mb-2"></i>
+                        <span id="splash-weather-temp-1" class="text-lg md:text-xl font-black text-slate-800 dark:text-white">--°C</span>
+                    </div>
+                    <div class="flex flex-col items-center flex-1">
+                        <span id="splash-weather-day-2" class="text-[11px] md:text-xs text-slate-500 dark:text-slate-400 font-kurdish font-bold mb-2">...</span>
+                        <i id="splash-weather-icon-2" data-lucide="sun" class="w-7 h-7 md:w-9 md:h-9 text-amber-500 mb-2"></i>
+                        <span id="splash-weather-temp-2" class="text-lg md:text-xl font-black text-slate-800 dark:text-white">--°C</span>
+                    </div>
+                </div>
+
+                <!-- Live Time -->
+                <div class="bg-[#1a2235] dark:bg-[#0f172a] border border-[#2d3748] dark:border-slate-800 text-white px-8 py-4 rounded-2xl flex flex-col items-center shadow-lg">
+                    <div class="flex items-center gap-1.5 text-slate-300 opacity-90 mb-1">
+                        <i data-lucide="clock" class="w-4 h-4"></i>
+                        <span class="text-[10px] font-bold tracking-widest uppercase">Live Time</span>
+                    </div>
+                    <div class="live-time-display text-2xl md:text-3xl font-mono font-black tracking-[0.1em] text-white">00:00:00 PM</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- 2. MAIN APP CONTENT (Responsive Container) -->
+    <!-- ========================================== -->
+    <div id="main-app" class="w-full max-w-md md:max-w-5xl lg:max-w-6xl mx-auto pt-safe px-5 pt-5 pb-12 hidden opacity-0 flex-col transition-all duration-300">
+        
+        <!-- Main Header with Glowing LED Border -->
+        <div class="w-full mb-6 z-20">
+            <div class="header-led-wrapper w-full">
+                <div class="header-led-inner px-5 py-6 md:py-8 text-center relative flex flex-col items-center">
+                    
+                    <h1 class="text-xl md:text-3xl font-black text-slate-800 dark:text-white tracking-tight mb-1">University of Raparin</h1>
+                    <h2 class="text-[13px] md:text-base font-bold text-slate-500 dark:text-slate-400">College of Basic Education</h2>
+                    <h3 class="text-xs md:text-sm font-bold text-brand-600 dark:text-brand-400 mt-1 mb-4">English Language Department</h3>
+                    
+                    <!-- Interactive Teacher Portal Toggle Button -->
+                    <button onclick="toggleInlineDashboard()" class="group bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 text-[11px] md:text-xs font-black uppercase tracking-widest px-6 py-2.5 rounded-full border border-brand-200 dark:border-brand-800/50 hover:bg-brand-100 dark:hover:bg-brand-900/50 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2 shadow-sm">
+                        <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                        <span>Teacher Portal</span>
+                        <i id="dash-chevron" data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 3. DYNAMIC INLINE DASHBOARD (Adaptive Grid)-->
+        <!-- ========================================== -->
+        <div id="inline-dashboard-content" class="w-full max-h-0 opacity-0 overflow-hidden -mt-2 mb-2 z-10 relative">
+            
+            <!-- Moving LED Colorful Border Wrapper -->
+            <div class="moving-border-wrapper w-full mt-2 mb-4">
+                <div class="moving-border-inner w-full p-6 flex flex-col md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 items-center justify-items-center">
+                    
+                    <!-- Item 1: Dual Dates & Season -->
+                    <div class="info-item flex flex-col items-center w-full text-center">
+                        <h2 class="en-date-display text-[18px] md:text-[20px] font-black text-slate-800 dark:text-white tracking-tight mb-1">Loading Date...</h2>
+                        <h3 class="ku-greg-date-display text-[14.5px] font-bold text-brand-600 dark:text-brand-400 font-kurdish text-center mb-0.5" dir="rtl">باردەکرێت...</h3>
+                        <h4 class="ku-jalaali-date-display text-[12.5px] font-medium text-slate-500 dark:text-slate-400 font-kurdish text-center mb-2.5" dir="rtl">...</h4>
+                        <div class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200/50 dark:border-emerald-800/30 px-3 py-0.5 rounded-full text-[10px] font-bold font-kurdish shadow-sm w-fit">
+                            <i data-lucide="leaf" class="w-3 h-3"></i> <span class="ku-season-display">...</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 2: Location -->
+                    <div class="info-item flex items-center justify-center gap-2 bg-slate-50 dark:bg-slate-800/80 px-4 py-2 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm w-fit">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-rose-500"></i>
+                        <span class="text-[11px] md:text-xs font-semibold text-slate-500 dark:text-slate-400">Ranya - Kurdistan</span>
+                    </div>
+
+                    <!-- Item 3: Weather (RTL) -->
+                    <div class="info-item flex items-center justify-between w-full max-w-sm bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800/80 rounded-[1.25rem] p-3 shadow-sm" dir="rtl">
+                        <div class="flex flex-col items-center flex-1 border-l border-slate-200 dark:border-slate-700/50">
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 font-kurdish font-bold mb-1.5">ئەمڕۆ</span>
+                            <i id="inline-weather-icon-0" data-lucide="sun" class="w-5 h-5 text-amber-500 mb-1"></i>
+                            <span id="inline-weather-temp-0" class="text-sm font-black text-slate-800 dark:text-white">--°</span>
+                        </div>
+                        <div class="flex flex-col items-center flex-1 border-l border-slate-200 dark:border-slate-700/50">
+                            <span id="inline-weather-day-1" class="text-[10px] text-slate-500 dark:text-slate-400 font-kurdish font-bold mb-1.5">...</span>
+                            <i id="inline-weather-icon-1" data-lucide="sun" class="w-5 h-5 text-amber-500 mb-1"></i>
+                            <span id="inline-weather-temp-1" class="text-sm font-black text-slate-800 dark:text-white">--°</span>
+                        </div>
+                        <div class="flex flex-col items-center flex-1">
+                            <span id="inline-weather-day-2" class="text-[10px] text-slate-500 dark:text-slate-400 font-kurdish font-bold mb-1.5">...</span>
+                            <i id="inline-weather-icon-2" data-lucide="sun" class="w-5 h-5 text-amber-500 mb-1"></i>
+                            <span id="inline-weather-temp-2" class="text-sm font-black text-slate-800 dark:text-white">--°</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 4: Time -->
+                    <div class="info-item bg-[#1a2235] dark:bg-[#0f172a] border border-[#2d3748] dark:border-slate-800 text-white px-6 py-2.5 rounded-xl flex items-center gap-3 shadow-lg w-fit">
+                        <i data-lucide="clock" class="w-4 h-4 text-brand-400"></i>
+                        <div class="live-time-display text-lg font-mono font-bold tracking-widest text-white">00:00:00 PM</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar controls (Adaptive sizing) -->
+        <div class="flex flex-col gap-3 mb-6 relative z-20">
+            <div class="flex gap-2 w-full">
+                <div class="relative flex-1">
+                    <input type="text" id="app-search" oninput="filterApps()" placeholder="Search applications..." class="w-full h-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[1.25rem] pl-5 pr-10 text-sm font-medium text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-400 shadow-sm placeholder-slate-400">
+                    <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                
+                <button onclick="toggleViewMode()" class="w-12 h-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[1.25rem] flex items-center justify-center text-slate-500 dark:text-slate-400 shadow-sm shrink-0 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800" title="Toggle View Mode">
+                    <i id="view-toggle-icon" data-lucide="list" class="w-5 h-5"></i>
+                </button>
+                <button onclick="toggleSortMode()" class="w-12 h-12 bg-brand-500 border border-brand-600 text-white rounded-[1.25rem] flex items-center justify-center shadow-md shadow-brand-500/30 shrink-0 hover:bg-brand-600 transition-colors" title="Sort List">
+                    <i id="sort-icon" data-lucide="arrow-up-down" class="w-5 h-5"></i>
+                </button>
+                <button id="pwaInstallBtn" onclick="installPWA()" class="hidden w-12 h-12 bg-emerald-500 border border-emerald-600 text-white rounded-[1.25rem] flex items-center justify-center shadow-md shadow-emerald-500/30 shrink-0 hover:bg-emerald-600 transition-all scale-100 hover:scale-105 active:scale-95" title="Install Portal">
+                    <i data-lucide="download" class="w-5 h-5"></i>
+                </button>
+                <button id="adminBtn" onclick="toggleAdminPanel()" class="w-12 h-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[1.25rem] flex items-center justify-center text-slate-500 dark:text-slate-400 shadow-sm shrink-0 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800" title="Admin Settings">
+                    <i id="adminLockIcon" data-lucide="lock" class="w-5 h-5"></i>
+                </button>
+                <button onclick="toggleTheme()" class="w-12 h-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[1.25rem] flex items-center justify-center text-slate-500 dark:text-slate-400 shadow-sm shrink-0 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800" title="Toggle Theme">
+                    <i data-lucide="moon" class="hidden dark:block w-5 h-5"></i>
+                    <i data-lucide="sun" class="block dark:hidden w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Apps Responsive Container (Perfect for Mobile AND Desktop) -->
+        <div id="apps-container" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 w-full relative z-20"></div>
+
+        <!-- ========================================== -->
+        <!-- 4. SECURE ADMIN SETTINGS & LINK MANAGER    -->
+        <!-- ========================================== -->
+        <div id="adminPanel" class="hidden mt-8 border border-brand-200 dark:border-brand-900/50 rounded-2xl bg-brand-50/50 dark:bg-slate-900/40 p-6 space-y-4 animate-pop w-full z-20 relative">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="flex items-center space-x-2">
+                    <div class="p-2 bg-brand-500/10 text-brand-600 dark:text-brand-400 rounded-lg">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white">Admin Control Center</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Edit custom paths, change URL targets, or customize links dynamically.</p>
+                    </div>
+                </div>
+                <button onclick="resetToDefaults()" class="text-xs font-semibold text-rose-500 hover:text-rose-600 flex items-center space-x-1 hover:underline">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                    <span>Reset to Defaults</span>
+                </button>
+            </div>
+
+            <!-- Table layout for customized links -->
+            <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-950">
+                <table class="w-full text-left text-xs md:text-sm border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800">
+                            <th class="p-3 font-semibold text-slate-700 dark:text-slate-300">Portal Application Name</th>
+                            <th class="p-3 font-semibold text-slate-700 dark:text-slate-300">Destination Link (URL)</th>
+                            <th class="p-3 font-semibold text-slate-700 dark:text-slate-300 text-center">Status</th>
+                            <th class="p-3 font-semibold text-slate-700 dark:text-slate-300 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminAppsList" class="divide-y divide-slate-100 dark:divide-slate-900">
+                        <!-- Filled dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="flex justify-end pt-2">
+                <button onclick="lockAdminMode()" class="px-4 py-2 text-xs font-semibold rounded-lg bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-900 transition-all flex items-center space-x-1.5">
+                    <i data-lucide="lock" class="w-4 h-4"></i>
+                    <span>Lock Configuration Mode</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 5. SECURITY MODALS & NOTIFICATIONS         -->
+    <!-- ========================================== -->
+    <!-- PIN Verification Dialog -->
+    <div id="pinModal" class="hidden fixed inset-0 z-[150] bg-slate-950/75 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl animate-pop relative">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                <i data-lucide="shield-alert" class="w-5 h-5 text-brand-500"></i>
+                <span>Admin Authentication Required</span>
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-kurdish" dir="rtl">تکایە تێپەڕەوشەی ئەدمین (PIN) بنووسە بۆ چالاککردنی دۆخی ڕێکخستن.</p>
+            
+            <div class="mt-4">
+                <input type="password" id="adminPinInput" placeholder="Enter security PIN..." class="w-full px-4 py-2.5 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-400">
+            </div>
+
+            <div class="mt-6 flex items-center justify-end space-x-2">
+                <button onclick="closePinModal()" class="px-4 py-2 text-xs font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
+                <button onclick="verifyAdminPin()" class="px-5 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-500/15">Verify & Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Edit App URL Modal -->
+    <div id="editModal" class="hidden fixed inset-0 z-[160] bg-slate-950/75 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl animate-pop relative">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Edit Application Route</h3>
+            <div class="mt-4 space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">English Title</label>
+                    <input type="text" id="editTitleEn" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs md:text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Kurdish Title</label>
+                    <input type="text" id="editTitleKu" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs md:text-sm text-right font-kurdish" dir="rtl">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">URL / Link Target</label>
+                    <input type="text" id="editUrl" class="w-full px-3 py-2 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs md:text-sm">
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-2">
+                <button onclick="closeEditModal()" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
+                <button onclick="saveAppChanges()" class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-brand-500 text-white">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating System Toast Notification -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] hidden">
+        <div class="bg-slate-800 border border-slate-700 text-white px-6 py-3.5 rounded-full shadow-2xl flex items-center gap-3 font-semibold text-sm">
+            <i data-lucide="info" class="w-5 h-5 text-brand-400"></i><span id="toast-msg">Notification</span>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 6. PROGRAM LOGIC & ASYNC UTILITIES         -->
+    <!-- ========================================== -->
+    <script>
+        // Database holding the 6 active department applications in precise order
+        const defaultApps = [
+            { id: 1, titleEn: "Teachers Portal", titleKu: "پۆرتاڵی مامۆستایان", icon: "graduation-cap", url: "https://english-uor.github.io/Teacher-Student/", theme: "blue", locked: false },
+            { id: 2, titleEn: "Attendance Portal", titleKu: "ئامادەبوونی خوێندکاران", icon: "calendar-check", url: "https://english-uor.github.io/attendance/", theme: "rose", locked: false },
+            { id: 3, titleEn: "Research Library", titleKu: "کتێبخانەی توێژینەوە", icon: "library", url: "https://english-uor.github.io/Library/", theme: "emerald", locked: false },
+            { id: 4, titleEn: "Course Distribution", titleKu: "دابەشکردنی وانەکان", icon: "layout-template", url: "https://english-uor.github.io/english.subjects/", theme: "indigo", locked: false },
+            { id: 5, titleEn: "Holidays & Occasions", titleKu: "پشوو و بۆنەکان", icon: "calendar-days", url: "holidays.html", theme: "amber", locked: false },
+            { id: 6, titleEn: "Schedules & Exams", titleKu: "خشتە و تاقیکردنەوەکان", icon: "file-text", url: "https://english-uor.github.io/schedule-calendar-exam/", theme: "purple", locked: false },
+            { id: 7, titleEn: "AI Tools", titleKu: "ئامرازەکانی زیرەکی دەستکرد", icon: "bot", url: "https://english-uor.github.io/AI/", theme: "cyan", locked: false },
+            { id: 8, titleEn: "Topic Similarity", titleKu: "لێکچوونی بابەت", icon: "scan-search", url: "https://english-uor.github.io/Topic-checker/", theme: "teal", locked: false },
+            { id: 9, titleEn: "Availability", titleKu: "کاتی ئامادەبوون", icon: "calendar-clock", url: "https://english-uor.github.io/availability-time/", theme: "orange", locked: false }
+        ];
+
+        // Each theme carries its own UNIQUE light background gradient (soft tint, per-app color
+        // identity) plus a solid-color icon badge on top, so the icon still pops against the
+        // lighter card. Title/subtitle text stays dark slate (set in the render markup below).
+        const gridThemes = {
+            blue:    { deepFrom: "#eff6ff", deepTo: "#dbeafe", border: "border-blue-200",    iconText: "text-white", iconBg: "bg-blue-600" },
+            rose:    { deepFrom: "#fff1f2", deepTo: "#ffe4e6", border: "border-rose-200",    iconText: "text-white", iconBg: "bg-rose-600" },
+            emerald: { deepFrom: "#ecfdf5", deepTo: "#d1fae5", border: "border-emerald-200", iconText: "text-white", iconBg: "bg-emerald-600" },
+            indigo:  { deepFrom: "#eef2ff", deepTo: "#e0e7ff", border: "border-indigo-200",  iconText: "text-white", iconBg: "bg-indigo-600" },
+            amber:   { deepFrom: "#fffbeb", deepTo: "#fef3c7", border: "border-amber-200",   iconText: "text-white", iconBg: "bg-amber-600" },
+            purple:  { deepFrom: "#faf5ff", deepTo: "#f3e8ff", border: "border-purple-200",  iconText: "text-white", iconBg: "bg-purple-600" },
+            cyan:    { deepFrom: "#ecfeff", deepTo: "#cffafe", border: "border-cyan-200",    iconText: "text-white", iconBg: "bg-cyan-600" },
+            teal:    { deepFrom: "#f0fdfa", deepTo: "#ccfbf1", border: "border-teal-200",    iconText: "text-white", iconBg: "bg-teal-600" },
+            orange:  { deepFrom: "#fff7ed", deepTo: "#ffedd5", border: "border-orange-200",  iconText: "text-white", iconBg: "bg-orange-600" },
+            slate:   { deepFrom: "#f8fafc", deepTo: "#f1f5f9", border: "border-slate-200",   iconText: "text-white", iconBg: "bg-slate-600" }
+        };
+
+        let appsList = [];
+        let currentView = localStorage.getItem('teacher_view_mode') || 'grid';
+        let sortMode = 'default'; 
+        let isDashboardOpen = false;
+        let isAdminUnlocked = false;
+        let editingAppId = null;
+        let fetchedAdminPin = null; // Completely empty to enforce secure fetch
+
+        // On Document Booting
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadAppsDatabase();
+            updateViewIcon();
+            initClock();
+            fetchWeather();
+            renderApps();
+            fetchAdminPin(); // Dynamic PIN prefetch
+            registerServiceWorker(); // Register Service Worker
+            lucide.createIcons();
+            
+            // Welcome Screen Timer (exactly 2 seconds)
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                const mainApp = document.getElementById('main-app');
+                
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.classList.add('hidden');
+                    mainApp.classList.remove('hidden');
+                    void mainApp.offsetWidth; 
+                    mainApp.style.opacity = '1';
+                }, 600); 
+            }, 2000); 
+        });
+
+        // Load customizable list from LocalStorage or defaults
+        function loadAppsDatabase() {
+            const saved = localStorage.getItem('uor_custom_teachers_apps');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    const defaultIds = new Set(defaultApps.map(a => a.id));
+                    const savedIds = new Set(parsed.map(a => a.id));
+                    const isCurrentSet = parsed.length === defaultApps.length &&
+                        [...defaultIds].every(id => savedIds.has(id));
+
+                    if (isCurrentSet) {
+                        appsList = parsed;
+                    } else {
+                        // Old data set (e.g. contains a removed app like Trainer/Research
+                        // Evaluation, Statistics Portal, Topic Submission) -> migrate to the
+                        // current app list (now 9 apps) while preserving any lock state by
+                        // matching title.
+                        appsList = defaultApps.map(def => {
+                            const match = parsed.find(p => p.titleEn === def.titleEn);
+                            return match ? { ...def, locked: !!match.locked, url: match.url || def.url } : { ...def };
+                        });
+                        saveAppsDatabase();
+                    }
+                } catch(e) {
+                    appsList = [...defaultApps];
+                }
+            } else {
+                appsList = [...defaultApps];
+            }
+        }
+
+        function saveAppsDatabase() {
+            localStorage.setItem('uor_custom_teachers_apps', JSON.stringify(appsList));
+        }
+
+        // Secure fetch to GitHub Admin.html securely querying the JSON pin
+        async function fetchAdminPin() {
+            try {
+                const response = await fetch('Admin.html');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.adminPin) {
+                        fetchedAdminPin = data.adminPin;
+                    }
+                }
+            } catch (err) {
+                console.log("Admin.html JSON fetch omitted or local host environment detected.");
+            }
+        }
+
+        // --- Inline Dashboard Controller ---
+        function toggleInlineDashboard() {
+            const content = document.getElementById('inline-dashboard-content');
+            const chevron = document.getElementById('dash-chevron');
+            isDashboardOpen = !isDashboardOpen;
+            
+            if (isDashboardOpen) {
+                content.style.maxHeight = '800px';
+                content.style.opacity = '1';
+                content.classList.add('is-open');
+                chevron.style.transform = 'rotate(180deg)';
+            } else {
+                content.style.maxHeight = '0';
+                content.style.opacity = '0';
+                content.classList.remove('is-open');
+                chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // --- Gregorian & Jalaali Kurdish Calendar Logic ---
+        function toKurdishDigits(num) {
+            return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+        }
+
+        function gregorianToJalaali(gy, gm, gd) {
+            const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+            let jy = (gy <= 1600) ? 0 : 979;
+            gy -= (gy <= 1600) ? 621 : 1600;
+            let gy2 = (gm > 2) ? (gy + 1) : gy;
+            let days = (365 * gy) + parseInt((gy2 + 3) / 4) - parseInt((gy2 + 99) / 100) + parseInt((gy2 + 399) / 400) - 80 + gd + g_d_m[gm - 1];
+            jy += 33 * parseInt(days / 12053);
+            days %= 12053;
+            jy += 4 * parseInt(days / 1461);
+            days %= 1461;
+            jy += parseInt((days - 1) / 365);
+            if (days > 365) days = (days - 1) % 365;
+            let jm = (days < 186) ? 1 + parseInt(days / 31) : 7 + parseInt((days - 186) / 30);
+            let jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+            return [jy, jm, jd];
+        }
+
+        function getKurdishSeason(month, day) { 
+            if ((month === 2 && day >= 21) || month === 3 || month === 4 || (month === 5 && day <= 20)) return "وەرزی بەهار"; 
+            if ((month === 5 && day >= 21) || month === 6 || month === 7 || (month === 8 && day <= 22)) return "وەرزی هاوین"; 
+            if ((month === 8 && day >= 23) || month === 9 || month === 10 || (month === 11 && day <= 20)) return "وەرزی پاییز"; 
+            return "وەرزی زستان"; 
+        }
+
+        function initClock() {
+            const kurdishDays = ["یەکشەممە", "دووشەممە", "سێشەممە", "چوارشەممە", "پێنجشەممە", "هەینی", "شەممە"];
+            
+            const kurdishGregorianMonths = [
+                "کانوونی دووەم", "شوبات", "ئادار", "نیسان", "ئایار", "حوزەیران", 
+                "تەممووز", "ئاب", "ئەیلوول", "تشرینی یەکەم", "تشرینی دووەم", "کانوونی یەکەم"
+            ];
+
+            const kurdishJalaaliMonths = [
+                "خاکەلێوە", "گوڵان", "جۆزەردان", "پووشپەڕ", "گەلاوێژ", "خەرمانان", 
+                "ڕەزبەر", "خەزەڵوەر", "سەرماوەز", "بەفرانبار", "ڕێبەندان", "ڕەشەمە"
+            ];
+
+            function update() {
+                const now = new Date();
+                
+                // English format
+                const timeString = now.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', second: '2-digit', hour12:true});
+                const dateString = now.toLocaleDateString('en-US', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+                
+                // Kurdish Gregorian
+                const kuDayName = kurdishDays[now.getDay()];
+                const kuGregDateStr = `${kuDayName}، ${toKurdishDigits(now.getDate())}ی ${kurdishGregorianMonths[now.getMonth()]}ی ${toKurdishDigits(now.getFullYear())}`;
+                
+                // Kurdish Jalaali
+                const [jYear, jMonth, jDay] = gregorianToJalaali(now.getFullYear(), now.getMonth() + 1, now.getDate());
+                const kYear = jYear + 1321; 
+                const kuJalaaliDateStr = `${toKurdishDigits(jDay)}ی ${kurdishJalaaliMonths[jMonth - 1]}ی ${toKurdishDigits(kYear)}`;
+
+                const kuSeasonStr = getKurdishSeason(now.getMonth(), now.getDate());
+
+                document.querySelectorAll('.en-date-display').forEach(el => el.innerText = dateString);
+                document.querySelectorAll('.ku-greg-date-display').forEach(el => el.innerText = kuGregDateStr);
+                document.querySelectorAll('.ku-jalaali-date-display').forEach(el => el.innerText = kuJalaaliDateStr);
+                document.querySelectorAll('.ku-season-display').forEach(el => el.innerText = kuSeasonStr);
+                document.querySelectorAll('.live-time-display').forEach(el => el.innerText = timeString);
+            }
+            setInterval(update, 1000); update();
+        }
+
+        // --- Weather Fetching from API (Ranya coordinates) ---
+        async function fetchWeather() {
+            try {
+                const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.2565&longitude=44.8828&daily=temperature_2m_max,weather_code&timezone=auto");
+                if(!res.ok) throw new Error("API limits exceeded");
+                const data = await res.json();
+                
+                const weatherCodes = data.daily.weather_code;
+                const tempsMax = data.daily.temperature_2m_max;
+
+                function getWeatherIcon(code) {
+                    if (code === 0) return "sun";
+                    if (code >= 1 && code <= 3) return "cloud-sun";
+                    if (code >= 51 && code <= 67) return "cloud-rain";
+                    if (code >= 71 && code <= 86) return "cloud-snow";
+                    return "cloud-lightning";
+                }
+
+                const kurdishDays = ["یەکشەممە", "دووشەممە", "سێشەممە", "چوارشەممە", "پێنجشەممە", "هەینی", "شەممە"];
+                const now = new Date();
+                const todayIdx = now.getDay();
+                
+                for(let i=0; i<3; i++) {
+                    const tempHigh = Math.round(tempsMax[i]);
+                    const iconName = getWeatherIcon(weatherCodes[i]);
+                    
+                    document.getElementById(`splash-weather-temp-${i}`).textContent = `${tempHigh}°C`;
+                    const sIcon = document.getElementById(`splash-weather-icon-${i}`);
+                    if(sIcon) sIcon.setAttribute('data-lucide', iconName);
+
+                    document.getElementById(`inline-weather-temp-${i}`).textContent = `${tempHigh}°C`;
+                    const iIcon = document.getElementById(`inline-weather-icon-${i}`);
+                    if(iIcon) iIcon.setAttribute('data-lucide', iconName);
+
+                    if (i === 1) {
+                        const tDay = kurdishDays[(todayIdx + 1) % 7];
+                        document.getElementById(`splash-weather-day-1`).textContent = tDay;
+                        document.getElementById(`inline-weather-day-1`).textContent = tDay;
+                    } else if (i === 2) {
+                        const daDay = kurdishDays[(todayIdx + 2) % 7];
+                        document.getElementById(`splash-weather-day-2`).textContent = daDay;
+                        document.getElementById(`inline-weather-day-2`).textContent = daDay;
+                    }
+                }
+                lucide.createIcons();
+            } catch(e) {
+                // Autumnal/Summer robust fallback
+                for(let i=0; i<3; i++) {
+                    let defaultTemp = i === 0 ? "42°C" : i === 1 ? "40°C" : "39°C";
+                    document.getElementById(`splash-weather-temp-${i}`).textContent = defaultTemp;
+                    document.getElementById(`inline-weather-temp-${i}`).textContent = defaultTemp;
+                }
+            }
+        }
+
+        // --- Sorting and Responsive Rendering ---
+        function toggleSortMode() {
+            if(sortMode === 'default') sortMode = 'asc';
+            else if(sortMode === 'asc') sortMode = 'desc';
+            else sortMode = 'default';
+            
+            const icon = document.getElementById('sort-icon');
+            if(sortMode === 'default') icon.setAttribute('data-lucide', 'arrow-up-down');
+            else if(sortMode === 'asc') icon.setAttribute('data-lucide', 'arrow-down-a-z');
+            else icon.setAttribute('data-lucide', 'arrow-up-z-a');
+            
+            lucide.createIcons();
+            showToast(sortMode === 'default' ? "Default Order" : sortMode === 'asc' ? "Sorted A-Z" : "Sorted Z-A");
+            filterApps();
+        }
+
+        function toggleViewMode() {
+            currentView = currentView === 'grid' ? 'list' : 'grid';
+            localStorage.setItem('teacher_view_mode', currentView);
+            updateViewIcon();
+            filterApps();
+        }
+
+        function updateViewIcon() {
+            const iconEl = document.getElementById('view-toggle-icon');
+            if (currentView === 'grid') iconEl.setAttribute('data-lucide', 'list');
+            else iconEl.setAttribute('data-lucide', 'layout-grid');
+            lucide.createIcons();
+        }
+
+        function filterApps() {
+            const searchQuery = document.getElementById('app-search').value.toLowerCase();
+            const container = document.getElementById('apps-container');
+            container.innerHTML = '';
+            
+            // Set fully responsive classes dynamically based on active view mode
+            if (currentView === 'grid') {
+                container.className = 'grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 w-full relative z-20';
+            } else {
+                container.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 w-full relative z-20';
+            }
+
+            let filtered = appsList.filter(app => 
+                app.titleEn.toLowerCase().includes(searchQuery) || 
+                app.titleKu.includes(searchQuery)
+            );
+
+            if (sortMode === 'asc') filtered.sort((a, b) => a.titleEn.localeCompare(b.titleEn));
+            else if (sortMode === 'desc') filtered.sort((a, b) => b.titleEn.localeCompare(a.titleEn));
+
+            // Bottom Locks: any locked app instantly drops to the bottom of the grid,
+            // while keeping the relative order established above (stable sort).
+            filtered.sort((a, b) => {
+                const aLocked = a.locked ? 1 : 0;
+                const bLocked = b.locked ? 1 : 0;
+                return aLocked - bLocked;
+            });
+
+            filtered.forEach((app, index) => {
+                const theme = gridThemes[app.theme] || gridThemes.slate;
+                const isLocked = app.locked || false;
+                const deepStyle = `background: linear-gradient(145deg, ${theme.deepFrom}, ${theme.deepTo});`;
+                const number = index + 1;
+
+                if (currentView === 'grid') {
+                    container.innerHTML += `
+                        <div onclick="handleAppClick(${app.id}, this)" style="${deepStyle}" class="app-card-grid p-3 sm:p-5 flex flex-col items-center justify-start text-center cursor-pointer shadow-sm ${theme.border} ${isLocked ? 'opacity-55 saturate-[0.25]' : ''}">
+                            <div class="app-number-badge">${number}</div>
+                            ${isLocked ? `
+                            <div class="absolute top-2 right-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center shadow-md animate-pulse z-[2]">
+                                <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                            </div>` : ''}
+                            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center mb-2.5 border border-white/10 shadow-sm ${theme.iconBg}">
+                                <i data-lucide="${app.icon}" class="w-5 h-5 sm:w-6 sm:h-6 ${theme.iconText}"></i>
+                            </div>
+                            <h3 class="text-[10px] sm:text-[11px] md:text-xs font-bold text-slate-800 leading-snug w-full truncate px-1">${app.titleEn}</h3>
+                            <h4 class="text-[9px] sm:text-[10px] md:text-[11px] text-slate-600/80 mt-0.5 font-kurdish leading-tight w-full truncate px-1" dir="rtl">${app.titleKu}</h4>
+                        </div>`;
+                } else {
+                    container.innerHTML += `
+                        <div onclick="handleAppClick(${app.id}, this)" style="${deepStyle}" class="app-card-list p-4 flex items-center gap-4 cursor-pointer ${theme.border} ${isLocked ? 'opacity-55 saturate-[0.25]' : ''}">
+                            <div class="app-number-badge">${number}</div>
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border border-white/10 shadow-sm ${theme.iconBg}">
+                                <i data-lucide="${app.icon}" class="w-6 h-6 ${theme.iconText}"></i>
+                            </div>
+                            <div class="flex flex-col flex-1 pr-6">
+                                <h3 class="text-[14px] md:text-[16px] font-bold text-slate-800 leading-tight flex items-center gap-2">
+                                    ${app.titleEn}
+                                    ${isLocked ? `<i data-lucide="lock" class="w-3.5 h-3.5 text-rose-500"></i>` : ''}
+                                </h3>
+                                <h4 class="text-[11px] md:text-xs font-bold text-slate-600/80 mt-1 font-kurdish" dir="rtl">${app.titleKu}</h4>
+                            </div>
+                        </div>`;
+                }
+            });
+            lucide.createIcons();
+        }
+
+        function renderApps() { filterApps(); }
+
+        function handleAppClick(id, cardEl) {
+            const app = appsList.find(a => a.id === id);
+            if (!app) return;
+
+            if (app.locked) {
+                showToast("ئەم بەشە لەلایەن ئەدمینەوە داخراوە | Locked by Admin");
+                return;
+            }
+
+            // Stable colored border, then an 800ms spinning LED animation before opening
+            if (cardEl) {
+                cardEl.classList.add('led-spinning');
+                cardEl.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    cardEl.classList.remove('led-spinning');
+                    cardEl.style.pointerEvents = '';
+                    window.open(app.url, '_blank');
+                }, 800);
+            } else {
+                window.open(app.url, '_blank');
+            }
+        }
+
+        function toggleAppLock(id) {
+            const appIndex = appsList.findIndex(a => a.id === id);
+            if (appIndex !== -1) {
+                appsList[appIndex].locked = !appsList[appIndex].locked;
+                saveAppsDatabase();
+                filterApps();
+                renderAdminTable();
+                showToast(appsList[appIndex].locked ? "پۆرتاڵەکە داخرا | Portal Locked" : "پۆرتاڵەکە کرایەوە | Portal Unlocked");
+            }
+        }
+
+        // --- Custom Admin Control Logic ---
+        function toggleAdminPanel() {
+            if (isAdminUnlocked) {
+                const panel = document.getElementById('adminPanel');
+                panel.classList.toggle('hidden');
+                if(!panel.classList.contains('hidden')) {
+                    panel.scrollIntoView({ behavior: 'smooth' });
+                }
+            } else {
+                document.getElementById('pinModal').classList.replace('hidden', 'flex');
+                document.getElementById('adminPinInput').focus();
+            }
+        }
+
+        function closePinModal() {
+            document.getElementById('pinModal').classList.replace('flex', 'hidden');
+            document.getElementById('adminPinInput').value = '';
+        }
+
+        async function verifyAdminPin() {
+            const entered = document.getElementById('adminPinInput').value;
+            
+            // On demand check if PIN file is not pre-fetched
+            if (!fetchedAdminPin) {
+                await fetchAdminPin();
+            }
+            
+            // Ultimate local fallback logic matching your secret GitHub variable
+            const checkPin = fetchedAdminPin || "English2026@";
+            
+            if (entered === checkPin) {
+                isAdminUnlocked = true;
+                showToast("سیستم ڕێکخستن بە سەرکەوتوویی کرایەوە");
+                document.getElementById('adminBtn').classList.add('bg-emerald-500/10', 'text-emerald-500');
+                const lockIcon = document.getElementById('adminLockIcon');
+                lockIcon.setAttribute('data-lucide', 'unlock');
+                closePinModal();
+                renderAdminTable();
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('adminPanel').scrollIntoView({ behavior: 'smooth' });
+                lucide.createIcons();
+            } else {
+                showToast("تێپەڕەوشەی هەڵە! دووبارە تاقیبکەرەوە.");
+            }
+        }
+
+        function lockAdminMode() {
+            isAdminUnlocked = false;
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('adminBtn').classList.remove('bg-emerald-500/10', 'text-emerald-500');
+            document.getElementById('adminLockIcon').setAttribute('data-lucide', 'lock');
+            showToast("دۆخی ڕێکخستن داخرا.");
+            lucide.createIcons();
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('adminAppsList');
+            tbody.innerHTML = '';
+            appsList.forEach(app => {
+                const isLocked = app.locked || false;
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/40">
+                        <td class="p-3">
+                            <div class="font-bold text-slate-800 dark:text-white">${app.titleEn}</div>
+                            <div class="text-[10px] text-slate-500 font-kurdish text-right" dir="rtl">${app.titleKu}</div>
+                        </td>
+                        <td class="p-3 text-slate-500 truncate max-w-xs font-mono text-xs">${app.url}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="toggleAppLock(${app.id})" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 mx-auto ${isLocked ? 'bg-rose-500 text-white hover:bg-rose-600' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'}">
+                                <i data-lucide="${isLocked ? 'lock' : 'unlock'}" class="w-3.5 h-3.5"></i>
+                                <span>${isLocked ? 'Locked' : 'Unlocked'}</span>
+                            </button>
+                        </td>
+                        <td class="p-3 text-center">
+                            <button onclick="openEditModal(${app.id})" class="px-3 py-1 bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold rounded-lg transition-all">
+                                Edit Route
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function openEditModal(id) {
+            const app = appsList.find(a => a.id === id);
+            if (!app) return;
+            editingAppId = id;
+            document.getElementById('editTitleEn').value = app.titleEn;
+            document.getElementById('editTitleKu').value = app.titleKu;
+            document.getElementById('editUrl').value = app.url;
+            document.getElementById('editModal').classList.replace('hidden', 'flex');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.replace('flex', 'hidden');
+            editingAppId = null;
+        }
+
+        function saveAppChanges() {
+            const appIndex = appsList.findIndex(a => a.id === editingAppId);
+            if (appIndex !== -1) {
+                appsList[appIndex].titleEn = document.getElementById('editTitleEn').value;
+                appsList[appIndex].titleKu = document.getElementById('editTitleKu').value;
+                appsList[appIndex].url = document.getElementById('editUrl').value;
+                saveAppsDatabase();
+                filterApps();
+                renderAdminTable();
+                closeEditModal();
+                showToast("گۆڕانکارییەکان بە سەرکەوتوویی پاشەکەوت کران");
+            }
+        }
+
+        function resetToDefaults() {
+            if (confirm("Are you sure you want to reset all custom links back to default?")) {
+                appsList = [...defaultApps];
+                saveAppsDatabase();
+                filterApps();
+                renderAdminTable();
+                showToast("بە سەرکەوتوویی گەڕێنرایەوە بۆ پۆرتاڵە بنەڕەتییەکان");
+            }
+        }
+
+        // --- Theme Handlers ---
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+
+        function initTheme() {
+            if (localStorage.theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+
+        let toastTimer;
+        function showToast(msg) {
+            const t = document.getElementById('toast'); 
+            document.getElementById('toast-msg').innerText = msg;
+            t.classList.remove('hidden', 'animate-pop'); 
+            void t.offsetWidth; 
+            t.classList.add('flex', 'animate-pop');
+            clearTimeout(toastTimer); 
+            toastTimer = setTimeout(() => { 
+                t.classList.add('hidden'); 
+                t.classList.remove('flex'); 
+            }, 2000);
+        }
+
+        // PWA Installation Prompter Setup
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent automatic execution
+            e.preventDefault();
+            // Store event details
+            deferredPrompt = e;
+            // Reveal the install trigger on the toolbar
+            const installBtn = document.getElementById('pwaInstallBtn');
+            if (installBtn) {
+                installBtn.classList.remove('hidden');
+            }
+        });
+
+        function installPWA() {
+            if (!deferredPrompt) return;
+            // Prompt the native install dialog
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    showToast("داونڵۆدکردن دەستیپێکرد | Starting Install...");
+                }
+                deferredPrompt = null;
+                const installBtn = document.getElementById('pwaInstallBtn');
+                if (installBtn) {
+                    installBtn.classList.add('hidden');
+                }
+            });
+        }
+
+        window.addEventListener('appinstalled', (evt) => {
+            const installBtn = document.getElementById('pwaInstallBtn');
+            if (installBtn) {
+                installBtn.classList.add('hidden');
+            }
+            showToast("بەرنامەکە بە سەرکەوتوویی جێگیرکرا | App Installed Successfully!");
+        });
+
+        // Register your service worker
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('Service Worker registered:', reg.scope))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            }
+        }
+    </script>
+</body>
+</html>
